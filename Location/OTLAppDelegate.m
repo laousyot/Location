@@ -7,8 +7,10 @@
 //
 
 #import "OTLAppDelegate.h"
+#import "OTLViewController.h"
 
 @implementation OTLAppDelegate
+
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
@@ -26,11 +28,34 @@
 {
     // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later. 
     // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+    OTLViewController *rootView = (OTLViewController *)self.window.rootViewController;
+    [rootView.locationManager stopUpdatingLocation];
+    
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
     // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
+    //[locationManager startUpdatingLocation];
+    OTLViewController *rootView = (OTLViewController *)self.window.rootViewController;
+    if([CLLocationManager locationServicesEnabled])
+    {
+        rootView.locationManager.desiredAccuracy= kCLLocationAccuracyHundredMeters;
+        rootView.locationManager.distanceFilter= 1000.0f;
+        [rootView.locationManager startUpdatingLocation];
+    }
+    else {
+        NSString *msg = @"Application cannot obtain location. Please go to Settings> Privacy> Location and enable location for this application";
+        UIAlertView *alert;
+        alert = [[UIAlertView alloc]
+                 initWithTitle:@"Error"
+                 message:msg
+                 delegate:self
+                 cancelButtonTitle:@"OK"
+                 otherButtonTitles:nil];
+        [alert show];
+        
+    }
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application
